@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react"
 import { GameContext } from "./GameProvider.js"
+import { useHistory } from "react-router-dom"
 import { useHistory } from 'react-router-dom'
-
 
 export const GameForm = () => {
     const history = useHistory()
@@ -70,79 +70,25 @@ export const GameForm = () => {
     /* REFACTOR CHALLENGE END */
 
     return (
-        <form className="gameForm">
-            <h2 className="gameForm__title">Register New Game</h2>
-            <fieldset>
-                <div className="form-group">
-                    <label htmlFor="title">Title: </label>
-                    <input type="text" name="title" required autoFocus className="form-control"
-                        value={currentGame.title}
-                        onChange={changeGameState}
-                    />
-                </div>
-            </fieldset>
-            <fieldset>
-                <div className="form-group">
-                    <label htmlFor="maker">Maker: </label>
-                    <input type="text" name="maker" required autoFocus className="form-control"
-                        value={currentGame.maker}
-                        onChange={changeGameState}
-                    />
-                </div>
-            </fieldset>
-            <fieldset>
-                <div className="form-group">
-                    <label htmlFor="numberOfPlayers">Number of Players: </label>
-                    <input type="number" name="numberOfPlayers" required autoFocus className="form-control"
-                        value={currentGame.numberOfPlayers}
-                        onChange={changeGameState}
-                    />
-                </div>
-            </fieldset>
-            <fieldset>
-                <div className="form-group">
-                    <label htmlFor="skillLevel">Skill Level: </label>
-                    <input type="number" name="skillLevel" required autoFocus className="form-control"
-                        value={currentGame.skillLevel}
-                        onChange={changeGameState}
-                    />
-                </div>
-            </fieldset>
-            <fieldset>
-                <div className="form-group">
-                    <label htmlFor="gameTypeId">Game Type: </label>
-                    <select name="skillLevel" required className="form-control"
-                        value={currentGame.gameTypeId}
-                        onChange={changeGameTypeState}
-                    >
-                        <option key="0" value="0">Select Game Type</option>
-                        {gameTypes.map(gt => (
-                            <option key={gt} value={gt.id}>{gt.label}</option>
-                        ))}
-                    </select>
-                </div>
-            </fieldset>
+        <>
+        <article className="games">
+            {
+                games.map(game => {
+                    return <section key={`game--${game.id}`} className="game">
+                        <div className="game__title">{game.title} by {game.maker}</div>
+                        <div className="game__players">{game.number_of_players} players needed</div>
+                        <div className="game__skillLevel">Skill level is {game.skill_level}</div>
+                    </section>
+                })
+            }
+        </article>
 
-            {/* You create the rest of the input fields for each game property */}
+        <button className="btn btn-2 btn-sep icon-create"
+        onClick={() => {
+            history.push("/games/new")
+        }}
+        >Register New Game</button>
+</>
 
-            <button type="submit"
-                onClick={evt => {
-                    // Prevent form from being submitted
-                    evt.preventDefault()
-
-                    const game = {
-                        maker: currentGame.maker,
-                        title: currentGame.title,
-                        numberOfPlayers: parseInt(currentGame.numberOfPlayers),
-                        skillLevel: parseInt(currentGame.skillLevel),
-                        gameTypeId: parseInt(currentGame.gameTypeId)
-                    }
-
-                    // Send POST request to your API
-                    createGame(game)
-                        .then(() => history.push("/games"))
-                }}
-                className="btn btn-primary">Create</button>
-        </form>
     )
 }
