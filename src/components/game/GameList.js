@@ -1,14 +1,18 @@
 import React, { useContext, useEffect } from "react"
 import { GameContext } from "./GameProvider.js"
+import { useHistory } from "react-router-dom"
 
 export const GameList = (props) => {
     const { games, getGames } = useContext(GameContext)
+
+    const history = useHistory()
 
     useEffect(() => {
         getGames()
     }, [])
 
     return (
+        <>
         <article className="games">
             {
                 games.map(game => {
@@ -20,5 +24,12 @@ export const GameList = (props) => {
                 })
             }
         </article>
+
+        <button className="btn btn-2 btn-sep icon-create"
+        onClick={() => {
+            history.push("/games/new")
+        }}
+        >Register New Game</button>
+</>
     )
 }
