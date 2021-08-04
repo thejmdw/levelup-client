@@ -1,4 +1,5 @@
-import React, { useState } from "react"
+import React, { useContext, useState, useEffect } from "react"
+import { useHistory } from 'react-router-dom'
 
 export const GameContext = React.createContext()
 
@@ -6,16 +7,6 @@ export const GameProvider = (props) => {
     const [ games, setGames ] = useState([])
     const [ game, setGame ] = useState({})
     const [ gameTypes, setGameTypes ] = useState([])
-
-    const getGames = () => {
-        return fetch("http://localhost:8000/games", {
-            headers:{
-                "Authorization": `Token ${localStorage.getItem("lu_token")}`
-            }
-        })
-            .then(response => response.json())
-            .then(setGames)
-    }
 
     const createGame = (game) => {
         return fetch("http://localhost:8000/games", {
@@ -30,6 +21,16 @@ export const GameProvider = (props) => {
             // .then()
     }
     
+    const getGames = () => {
+        return fetch("http://localhost:8000/games", { 
+            headers:{
+                "Authorization": `Token ${localStorage.getItem("lu_token")}`
+            }
+        })
+            .then(response => response.json())
+            .then(setGames)
+    }
+    
     const getGameTypes = () => {
         return fetch("http://localhost:8000/gametypes", { 
             headers:{
@@ -39,11 +40,13 @@ export const GameProvider = (props) => {
             .then(response => response.json())
             .then(setGameTypes)
     }
+ 
     
 
     return (
         <GameContext.Provider value={{ games, game, gameTypes, getGames, createGame, getGameTypes }} >
             { props.children }
         </GameContext.Provider>
+
     )
 }
