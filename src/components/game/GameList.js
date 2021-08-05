@@ -14,6 +14,9 @@ export const GameList = () => {
     return (
         <>
         <article className="games">
+        <header className="events__header">
+                <h1>Level Up Games</h1>
+            </header>
             {
                 games.map(game => {
                     return <section key={`game--${game.id}`} className="game">
