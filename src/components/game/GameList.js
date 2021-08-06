@@ -1,14 +1,18 @@
-import React, { useContext, useState, useEffect } from "react"
+import React, { useContext, useEffect } from "react"
 import { GameContext } from "./GameProvider.js"
+import { EventContext } from "./EventProvider.js"
 import { useHistory } from "react-router-dom"
 
 export const GameList = () => {
     const history = useHistory()
     const { games, getGames } = useContext(GameContext)
+    const { events, getEvents } = useContext(EventContext)
 
+    
 
     useEffect(() => {
         getGames()
+        getEvents()
     }, [])
 
     return (
@@ -23,6 +27,20 @@ export const GameList = () => {
                         <div className="game__title">{game.title} by {game.maker}</div>
                         <div className="game__players">{game.number_of_players} players needed</div>
                         <div className="game__skillLevel">Skill level is {game.skill_level}</div>
+                        <h4>Upcoming Events</h4>
+                        {
+                            events.filter(e => e.game.id === game.id)
+                                .map(e => {
+                                    return <div key={`gameEvent--${e.id}`}>
+                                        {e.date} @ {e.time}
+                                    </div>
+                                })
+                        }
+                        <div className="game__edit">
+                        <button className="btn btn-3"
+                                    onClick={() => history.push(`games/edit/${game.id}`)}
+                                    >Edit Game</button>
+                        </div>
                     </section>
                 })
             }
