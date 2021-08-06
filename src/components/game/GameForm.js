@@ -1,11 +1,15 @@
 import React, { useContext, useState, useEffect } from "react"
 import { GameContext } from "./GameProvider.js"
-import { useHistory } from 'react-router-dom'
+import { ProfileContext } from "../auth/ProfileProvider.js"
+import { useHistory, useParams } from 'react-router-dom'
 
 
 export const GameForm = () => {
     const history = useHistory()
-    const { createGame, getGameTypes, gameTypes } = useContext(GameContext)
+    const { game, createGame, getGameTypes, gameTypes, getGameById, updateGame } = useContext(GameContext)
+    const { getProfile } = useContext(ProfileContext)
+
+    const { gameId } = useParams()
 
     /*
         Since the input fields are bound to the values of
@@ -26,7 +30,33 @@ export const GameForm = () => {
     */
     useEffect(() => {
         getGameTypes()
+        
+        if (gameId) {
+            getGameById(gameId)
+             .then(game => setCurrentGame({
+                 skillLevel: game.skill_level,
+                 numberOfPlayers: game.number_of_players,
+                 title: game.title,
+                 maker: game.maker,
+                 gameTypeId: game.game_type.id
+ 
+             }))
+         }
     }, [])
+    
+    // useEffect(() => {
+    //    if (gameId) {
+    //        getGameById(parseInt(gameId))
+    //         .then(game => setCurrentGame({
+    //             skillLevel: game.skill_level,
+    //             numberOfPlayers: game.number_of_players,
+    //             title: game.title,
+    //             maker: game.maker,
+    //             gameTypeId: game.game_type.id
+
+    //         }))
+    //     }
+    // }, [gameId])
 
     /*
         REFACTOR CHALLENGE START
@@ -71,7 +101,7 @@ export const GameForm = () => {
 
     return (
         <form className="gameForm">
-            <h2 className="gameForm__title">Register New Game</h2>
+            { gameId ? <h2 className="gameForm__title">Edit Game</h2> : <h2 className="gameForm__title">Register New Game</h2>}
             <fieldset>
                 <div className="form-group">
                     <label htmlFor="title">Title: </label>
@@ -124,8 +154,26 @@ export const GameForm = () => {
             </fieldset>
 
             {/* You create the rest of the input fields for each game property */}
+            { gameId ? <button type="submit"
+                onClick={evt => {
+                    // Prevent form from being submitted
+                    evt.preventDefault()
 
-            <button type="submit"
+                    const game = {
+                        id: parseInt(gameId),
+                        maker: currentGame.maker,
+                        title: currentGame.title,
+                        numberOfPlayers: parseInt(currentGame.numberOfPlayers),
+                        skillLevel: parseInt(currentGame.skillLevel),
+                        gameTypeId: parseInt(currentGame.gameTypeId)
+                    }
+
+                    // Send POST request to your API
+                    updateGame(game)
+                        .then(() => history.push("/games"))
+                }}
+                className="btn btn-primary">Update</button> 
+             : <button type="submit"
                 onClick={evt => {
                     // Prevent form from being submitted
                     evt.preventDefault()
@@ -142,7 +190,7 @@ export const GameForm = () => {
                     createGame(game)
                         .then(() => history.push("/games"))
                 }}
-                className="btn btn-primary">Create</button>
+                className="btn btn-primary">Create</button>}
         </form>
     )
 }
